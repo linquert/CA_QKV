@@ -1,0 +1,75 @@
+experiment_name: debug_left_copy
+seed: 1
+prefer_cuda: false
+output_dir: /mnt/data/ca_qkv_experiments/outputs/debug_left_copy
+rule:
+  name: LEFT_COPY
+model:
+  max_seq_len: 128
+  d_model: 32
+  n_layers: 1
+  n_heads: 2
+  d_mlp: 64
+  dropout: 0.0
+tokenizer:
+  include_position_tokens: false
+data:
+  row_length: 8
+  train_distribution: balanced
+  boundary_condition: zero
+  batch_size: 16
+  eval_batch_size: 32
+  num_train_examples: 64
+  num_eval_examples: 64
+  eval_lengths:
+  - 8
+  - 12
+  eval_distributions:
+  - balanced
+  - random
+  num_workers: 0
+training:
+  optimizer: adamw
+  lr: 0.001
+  weight_decay: 0.0
+  epochs: 1
+  log_every_steps: 1
+  eval_every_steps: 4
+  full_eval_every_epochs: 1
+  save_every_epochs: 1
+probes:
+  every_epochs: 1
+  max_batches: 1
+  epochs: 2
+logging:
+  use_wandb: false
+  project: ca-qkv
+  save_artifacts: false
+  log_figures: true
+dense_eval:
+  enabled: true
+  every_steps: 1
+  until_step: 20
+  then_every_steps: 0
+  examples_per_neighborhood: 4
+  distribution: single_cell_balanced
+  log_at_epoch_end: true
+delta:
+  enabled: true
+  every_steps: 1
+  until_step: 20
+  then_every_steps: 0
+  include_attention_qk: true
+  max_attention_batches: 1
+  log_before_after: false
+  save_jsonl: true
+gradient_alignment:
+  enabled: true
+  every_steps: 1
+  until_step: 5
+  then_every_steps: 0
+  layer_idx: 0
+  heads: all
+  include_wq: true
+  include_wk: true
+  use_eval_mode: false

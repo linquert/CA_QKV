@@ -1,0 +1,77 @@
+experiment_name: majority_diagnostic_v1
+seed: 44
+prefer_cuda: true
+output_dir: /content/drive/MyDrive/ca_qkv_experiments/outputs/majority_diagnostic_v1
+rule:
+  name: MAJORITY
+model:
+  max_seq_len: 160
+  d_model: 192
+  n_layers: 1
+  n_heads: 3
+  d_mlp: 384
+  dropout: 0.0
+tokenizer:
+  include_position_tokens: false
+data:
+  row_length: 16
+  train_distribution: single_cell_balanced
+  boundary_condition: zero
+  batch_size: 128
+  eval_batch_size: 256
+  num_train_examples: 20000
+  num_eval_examples: 1024
+  eval_lengths:
+  - 16
+  - 32
+  - 64
+  eval_distributions:
+  - balanced
+  - skewed_smooth
+  - random
+  num_workers: 0
+training:
+  optimizer: adamw
+  lr: 0.0005
+  weight_decay: 0.01
+  epochs: 40
+  log_every_steps: 10
+  eval_every_steps: 100
+  full_eval_every_epochs: 1
+  save_every_epochs: 5
+probes:
+  every_epochs: 1
+  max_batches: 6
+  epochs: 25
+logging:
+  use_wandb: true
+  project: ca-qkv
+  save_artifacts: false
+  log_figures: true
+dense_eval:
+  enabled: true
+  every_steps: 1
+  until_step: 300
+  then_every_steps: 100
+  examples_per_neighborhood: 16
+  distribution: single_cell_balanced
+  log_at_epoch_end: true
+delta:
+  enabled: true
+  every_steps: 5
+  until_step: 100
+  then_every_steps: 100
+  include_attention_qk: true
+  max_attention_batches: 1
+  log_before_after: false
+  save_jsonl: true
+gradient_alignment:
+  enabled: true
+  every_steps: 25
+  until_step: 300
+  then_every_steps: 100
+  layer_idx: 0
+  heads: all
+  include_wq: true
+  include_wk: true
+  use_eval_mode: false
